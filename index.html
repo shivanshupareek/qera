@@ -1,88 +1,157 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
     <title>Coming Soon — Automation Studio</title>
-    <meta name="description"
-        content="A modern automation studio building intelligent systems that work quietly in the background.">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@100;200;300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
-</head>
+    <meta
+      name="description"
+      content="A modern automation studio building intelligent systems that work quietly in the background."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@100;200;300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
 
-<body>
-    <header class="navbar">
-        <div class="brand">
-            <img src="assets/qera_logo_dark.svg" alt="Qera Logo" class="brand-logo">
-            <span class="brand-name">Qera Studio</span>
-        </div>
-    </header>
+  <body>
     <div class="dot-grid"></div>
 
     <main class="container">
-        <div class="content">
-            <div class="badge">
-                <span class="pulse-dot"></span>
-                <span class="badge-text">In Development</span>
-            </div>
-
-            <h1 class="title">
-                Building systems that work
-                <span class="gradient-text">in the background</span>
-            </h1>
-
-            <p class="subtitle">
-                We're crafting intelligent automation tools for teams who value precision, clarity, and calm
-                productivity.
-            </p>
-
-            <div class="notify-form">
-                <div class="input-wrapper">
-                    <input type="email" id="email" placeholder="your@email.com" class="email-input"
-                        aria-label="Email address">
-                    <button type="submit" class="notify-btn" id="notifyBtn">
-                        <span class="btn-text">Get notified</span>
-                        <svg class="btn-icon" width="16" height="16" viewBox="0 0 16 16" fill="none"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" stroke-width="1.5"
-                                stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
-                    </button>
-                </div>
-                <p class="form-hint" id="formHint">We'll let you know when we launch.</p>
-            </div>
-
-
-
-            <div class="social-section">
-                <p class="social-label">Connect with us</p>
-                <div class="social-icons">
-                    <a href="#" class="social-link" aria-label="Facebook" id="facebook-link">
-                        <img src="assets/facebook.svg" alt="Facebook" class="social-icon">
-                    </a>
-                    <a href="#" class="social-link" aria-label="Instagram" id="instagram-link">
-                        <img src="assets/instagram.svg" alt="Instagram" class="social-icon">
-                    </a>
-                    <a href="#" class="social-link" aria-label="Threads" id="threads-link">
-                        <img src="assets/threads.svg" alt="Threads" class="social-icon">
-                    </a>
-                    <a href="#" class="social-link" aria-label="Twitter" id="twitter-link">
-                        <img src="assets/twitter.svg" alt="Twitter" class="social-icon">
-                    </a>
-                </div>
-            </div>
+      <div class="content">
+        <div class="badge">
+          <span class="pulse-dot"></span>
+          <span class="badge-text">In Development</span>
         </div>
 
-        <footer class="footer">
-            <p class="footer-text">© 2026 Qera Studio. Designed with intention.</p>
-        </footer>
+        <div class="brand">
+          <img
+            src="assets/qera_logo_dark.svg"
+            alt="Qera Logo"
+            class="brand-logo"
+          />
+          <span class="brand-name">Qera Studio</span>
+        </div>
+
+        <h1 class="title">
+          Building systems that work
+          <span class="gradient-text">in the background</span>
+        </h1>
+
+        <p class="subtitle">
+          We're crafting intelligent automation tools for teams who value
+          precision, clarity, and calm productivity.
+        </p>
+
+        <div class="notify-form">
+          <div
+            class="notify-slider"
+            id="notifySlider"
+            role="slider"
+            aria-label="Slide to get notified"
+            tabindex="0"
+          >
+            <div class="notify-slider-track">
+              <div class="notify-slider-fill" id="sliderFill"></div>
+              <div
+                class="notify-slider-thumb"
+                id="sliderThumb"
+                draggable="false"
+              >
+                <img
+                  src="assets/email.svg"
+                  alt=""
+                  class="notify-slider-icon"
+                  aria-hidden="true"
+                />
+              </div>
+            </div>
+          </div>
+          <p class="form-hint" id="formHint">Slide or click to get notified.</p>
+        </div>
+
+        <!-- Email popup -->
+        <div class="email-popup" id="emailPopup" aria-hidden="true">
+          <div class="email-popup-backdrop" id="popupBackdrop"></div>
+          <div class="email-popup-content">
+            <h3 class="email-popup-title">Get notified</h3>
+            <input
+              type="email"
+              id="email"
+              placeholder="your@email.com"
+              class="email-popup-input"
+              aria-label="Email address"
+            />
+            <div class="email-popup-actions">
+              <button type="button" class="email-popup-cancel" id="popupCancel">
+                Cancel
+              </button>
+              <button type="submit" class="email-popup-send" id="popupSend">
+                <span class="send-text">Send</span>
+              </button>
+            </div>
+            <p class="email-popup-hint" id="popupHint"></p>
+          </div>
+        </div>
+
+        <div class="social-section">
+          <p class="social-label">Connect with us</p>
+          <div class="social-icons">
+            <a
+              href="#"
+              class="social-link"
+              aria-label="Facebook"
+              id="facebook-link"
+            >
+              <img
+                src="assets/facebook.svg"
+                alt="Facebook"
+                class="social-icon"
+              />
+            </a>
+            <a
+              href="#"
+              class="social-link"
+              aria-label="Instagram"
+              id="instagram-link"
+            >
+              <img
+                src="assets/instagram.svg"
+                alt="Instagram"
+                class="social-icon"
+              />
+            </a>
+            <a
+              href="#"
+              class="social-link"
+              aria-label="Threads"
+              id="threads-link"
+            >
+              <img src="assets/threads.svg" alt="Threads" class="social-icon" />
+            </a>
+            <a
+              href="#"
+              class="social-link"
+              aria-label="Twitter"
+              id="twitter-link"
+            >
+              <img src="assets/twitter.svg" alt="Twitter" class="social-icon" />
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <footer class="footer">
+        <p class="footer-text">© 2026 Qera Studio. Designed with intention.</p>
+      </footer>
     </main>
 
     <script src="script.js"></script>
-</body>
-
+  </body>
 </html>

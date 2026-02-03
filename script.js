@@ -1,100 +1,209 @@
-// Email validation and form handling
-document.addEventListener('DOMContentLoaded', () => {
-    const emailInput = document.getElementById('email');
-    const notifyBtn = document.getElementById('notifyBtn');
-    const formHint = document.getElementById('formHint');
-    const btnText = notifyBtn.querySelector('.btn-text');
+// Slider + popup for email notification
+document.addEventListener("DOMContentLoaded", () => {
+  const slider = document.getElementById("notifySlider");
+  const track = slider?.querySelector(".notify-slider-track");
+  const thumb = document.getElementById("sliderThumb");
+  const fill = document.getElementById("sliderFill");
+  const formHint = document.getElementById("formHint");
+  const popup = document.getElementById("emailPopup");
+  const backdrop = document.getElementById("popupBackdrop");
+  const popupCancel = document.getElementById("popupCancel");
+  const popupSend = document.getElementById("popupSend");
+  const emailInput = document.getElementById("email");
+  const popupHint = document.getElementById("popupHint");
+  const sendText = popupSend?.querySelector(".send-text");
 
-    // Email validation regex
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const openThreshold = 0.85;
 
-    // Handle form submission
-    notifyBtn.addEventListener('click', (e) => {
-        e.preventDefault();
+  if (!track || !thumb || !fill || !popup) return;
 
-        const email = emailInput.value.trim();
+  let isDragging = false;
+  let startX = 0;
+  let startLeft = 0;
 
-        // Validate email
-        if (!email) {
-            showError('Please enter your email address');
-            return;
-        }
+  function getTrackRect() {
+    return track.getBoundingClientRect();
+  }
 
-        if (!emailRegex.test(email)) {
-            showError('Please enter a valid email address');
-            return;
-        }
+  function getThumbMaxLeft() {
+    const trackRect = getTrackRect();
+    return trackRect.width - thumb.offsetWidth - 8;
+  }
 
-        // Simulate successful submission
-        submitEmail(email);
-    });
+  function setThumbPosition(px) {
+    const maxLeft = getThumbMaxLeft();
+    const left = Math.max(0, Math.min(px, maxLeft));
+    thumb.style.left = `${left}px`;
+    fill.style.width = `${left + thumb.offsetWidth / 2}px`;
+    return left >= maxLeft * openThreshold;
+  }
 
-    // Handle Enter key in email input
-    emailInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            notifyBtn.click();
-        }
-    });
+  function resetSlider() {
+    thumb.style.left = "3px";
+    fill.style.width = "0";
+  }
 
-    // Clear error state on input
-    emailInput.addEventListener('input', () => {
-        emailInput.style.borderColor = '';
-        formHint.textContent = "We'll let you know when we launch.";
-        formHint.classList.remove('success');
-    });
+  function openPopup() {
+    popup.classList.add("open");
+    popup.setAttribute("aria-hidden", "false");
+    emailInput.value = "";
+    emailInput.classList.remove("error");
+    popupHint.textContent = "";
+    popupHint.className = "email-popup-hint";
+    emailInput.focus();
+    document.body.style.overflow = "hidden";
+  }
 
-    function showError(message) {
-        emailInput.style.borderColor = '#ef4444';
-        formHint.textContent = message;
-        formHint.style.color = '#ef4444';
+  function closePopup() {
+    popup.classList.remove("open");
+    popup.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+  }
 
-        // Shake animation
-        emailInput.style.animation = 'shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97)';
-        setTimeout(() => {
-            emailInput.style.animation = '';
-        }, 400);
+  function showError(message) {
+    popupHint.textContent = message;
+    popupHint.className = "email-popup-hint error";
+    emailInput.classList.add("error");
+  }
+
+  function submitEmail(email) {
+    popupSend.disabled = true;
+    if (sendText) sendText.textContent = "Submitting...";
+
+    setTimeout(() => {
+      popupHint.textContent = "Thanks! We'll notify you at launch.";
+      popupHint.className = "email-popup-hint success";
+      emailInput.value = "";
+      if (sendText) sendText.textContent = "Send";
+      popupSend.disabled = false;
+      formHint.textContent = "We'll let you know when we launch.";
+      formHint.classList.add("success");
+
+      setTimeout(() => {
+        closePopup();
+        resetSlider();
+        formHint.classList.remove("success");
+        formHint.textContent = "Slide or click to get notified.";
+      }, 1500);
+
+      console.log("Email submitted:", email);
+    }, 1000);
+  }
+
+  // Track click (anywhere on slider opens popup)
+  track.addEventListener("click", (e) => {
+    if (e.target.closest(".notify-slider-thumb")) return;
+    openPopup();
+  });
+
+  // Thumb click opens popup
+  thumb.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (!isDragging) openPopup();
+  });
+
+  // Drag start
+  thumb.addEventListener("mousedown", (e) => {
+    e.preventDefault();
+    isDragging = true;
+    startX = e.clientX;
+    startLeft = parseInt(thumb.style.left || "3", 10) || 3;
+  });
+
+  // Drag move
+  document.addEventListener("mousemove", (e) => {
+    if (!isDragging) return;
+    const trackRect = getTrackRect();
+    const deltaX = e.clientX - startX;
+    const newLeft = startLeft + deltaX;
+    const reachedEnd = setThumbPosition(newLeft);
+    if (reachedEnd) {
+      openPopup();
+      resetSlider();
+      isDragging = false;
+    }
+  });
+
+  // Drag end
+  document.addEventListener("mouseup", () => {
+    if (isDragging) {
+      resetSlider();
+      isDragging = false;
+    }
+  });
+
+  // Touch support
+  thumb.addEventListener("touchstart", (e) => {
+    isDragging = true;
+    startX = e.touches[0].clientX;
+    startLeft = parseInt(thumb.style.left || "3", 10) || 3;
+  });
+
+  document.addEventListener(
+    "touchmove",
+    (e) => {
+      if (!isDragging || !e.touches.length) return;
+      e.preventDefault();
+      const deltaX = e.touches[0].clientX - startX;
+      const newLeft = startLeft + deltaX;
+      const reachedEnd = setThumbPosition(newLeft);
+      if (reachedEnd) {
+        openPopup();
+        resetSlider();
+        isDragging = false;
+      }
+    },
+    { passive: false },
+  );
+
+  document.addEventListener("touchend", () => {
+    if (isDragging) {
+      resetSlider();
+      isDragging = false;
+    }
+  });
+
+  backdrop.addEventListener("click", closePopup);
+  popupCancel.addEventListener("click", () => {
+    closePopup();
+    resetSlider();
+  });
+
+  popupSend.addEventListener("click", (e) => {
+    e.preventDefault();
+    const email = emailInput.value.trim();
+
+    if (!email) {
+      showError("Please enter your email address");
+      return;
+    }
+    if (!emailRegex.test(email)) {
+      showError("Please enter a valid email address");
+      return;
     }
 
-    function submitEmail(email) {
-        // Disable button during submission
-        notifyBtn.disabled = true;
-        notifyBtn.style.opacity = '0.7';
-        btnText.textContent = 'Submitting...';
+    emailInput.classList.remove("error");
+    popupHint.className = "email-popup-hint";
+    popupHint.textContent = "";
+    submitEmail(email);
+  });
 
-        // Simulate API call
-        setTimeout(() => {
-            // Success state
-            notifyBtn.classList.add('success');
-            btnText.textContent = 'You\'re on the list!';
-            formHint.textContent = 'Thanks! We\'ll notify you at launch.';
-            formHint.classList.add('success');
+  emailInput.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") popupSend.click();
+  });
 
-            // Clear input
-            emailInput.value = '';
-            emailInput.style.borderColor = 'var(--color-success)';
+  emailInput.addEventListener("input", () => {
+    emailInput.classList.remove("error");
+    popupHint.textContent = "";
+    popupHint.className = "email-popup-hint";
+  });
 
-            // Reset button after delay
-            setTimeout(() => {
-                notifyBtn.disabled = false;
-                notifyBtn.style.opacity = '1';
-                notifyBtn.classList.remove('success');
-                btnText.textContent = 'Get notified';
-                emailInput.style.borderColor = '';
-            }, 3000);
-
-            // Log submission (in production, send to backend)
-            console.log('Email submitted:', email);
-        }, 1000);
+  // Close on Escape
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && popup.classList.contains("open")) {
+      closePopup();
+      resetSlider();
     }
+  });
 });
-
-// Add shake animation to CSS dynamically
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes shake {
-        0%, 100% { transform: translateX(0); }
-        10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
-        20%, 40%, 60%, 80% { transform: translateX(4px); }
-    }
-`;
-document.head.appendChild(style);
