@@ -67,9 +67,17 @@ document.addEventListener("DOMContentLoaded", () => {
     emailInput.classList.add("error");
   }
 
+  const NOTIFY_EMAIL = "qera.ops@gmail.com";
+
   function submitEmail(email) {
     popupSend.disabled = true;
     if (sendText) sendText.textContent = "Submitting...";
+
+    const subject = encodeURIComponent("Qera Waitlist Signup");
+    const body = encodeURIComponent(`New signup: ${email}`);
+    const mailtoLink = `mailto:${NOTIFY_EMAIL}?subject=${subject}&body=${body}`;
+
+    window.location.href = mailtoLink;
 
     setTimeout(() => {
       popupHint.textContent = "Thanks! We'll notify you at launch.";
@@ -86,9 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
         formHint.classList.remove("success");
         formHint.textContent = "Slide or click to get notified.";
       }, 1500);
-
-      console.log("Email submitted:", email);
-    }, 1000);
+    }, 800);
   }
 
   // Track click (anywhere on slider opens popup)
@@ -204,6 +210,38 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.key === "Escape" && popup.classList.contains("open")) {
       closePopup();
       resetSlider();
+    }
+  });
+
+  // Coming soon popup (Threads link)
+  const comingSoonPopup = document.getElementById("comingSoonPopup");
+  const comingSoonBackdrop = document.getElementById("comingSoonBackdrop");
+  const comingSoonClose = document.getElementById("comingSoonClose");
+  const threadsLink = document.getElementById("threads-link");
+
+  function openComingSoon() {
+    comingSoonPopup?.classList.add("open");
+    comingSoonPopup?.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeComingSoon() {
+    comingSoonPopup?.classList.remove("open");
+    comingSoonPopup?.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+  }
+
+  threadsLink?.addEventListener("click", (e) => {
+    e.preventDefault();
+    openComingSoon();
+  });
+
+  comingSoonBackdrop?.addEventListener("click", closeComingSoon);
+  comingSoonClose?.addEventListener("click", closeComingSoon);
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && comingSoonPopup?.classList.contains("open")) {
+      closeComingSoon();
     }
   });
 });

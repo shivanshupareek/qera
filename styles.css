@@ -139,6 +139,7 @@ body {
 
 .container {
   position: relative;
+  height: 100%;
   z-index: 1;
   min-height: 100vh;
   display: flex;
@@ -149,7 +150,12 @@ body {
 }
 
 .content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between; /* Changed from center */
   max-width: 640px;
+  height: 100%;
   width: 100%;
   text-align: center;
   overflow: visible;
@@ -207,17 +213,22 @@ body {
   background: var(--color-pulse);
   border-radius: 50%;
   position: relative;
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  animation: pulse 1.5s ease-in-out infinite;
+  box-shadow: 0 0 0 0 rgba(160, 236, 6, 0.4);
 }
 
 @keyframes pulse {
   0%,
   100% {
     opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(160, 236, 6, 0.4);
   }
 
   50% {
-    opacity: 0.5;
+    opacity: 0.85;
+    transform: scale(1.15);
+    box-shadow: 0 0 8px 2px rgba(160, 236, 6, 0.5);
   }
 }
 
@@ -260,7 +271,7 @@ body {
    =========================== */
 
 .title {
-  font-size: clamp(0.5rem, 5vw, 1.5rem);
+  font-size: clamp(0.5rem, 2vw, 1rem);
   font-weight: var(--font-weight-semibold);
   line-height: 1.15;
   margin-bottom: var(--space-lg);
@@ -301,7 +312,9 @@ body {
 }
 
 .notify-slider {
+  width: 180px;
   max-width: 180px;
+  min-width: 180px;
   margin: 0 auto var(--space-md);
   outline: none;
 }
@@ -545,6 +558,75 @@ body {
 }
 
 /* ===========================
+   Coming Soon Popup
+   =========================== */
+
+.coming-soon-popup {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-xl);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--transition-base), visibility var(--transition-base);
+}
+
+.coming-soon-popup.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.coming-soon-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  cursor: pointer;
+}
+
+.coming-soon-content {
+  position: relative;
+  padding: var(--space-2xl);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.4);
+  text-align: center;
+  animation: popupIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.coming-soon-text {
+  font-size: 1.125rem;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-lg);
+}
+
+.coming-soon-btn {
+  padding: 0.5rem 1.5rem;
+  background: linear-gradient(
+    135deg,
+    var(--color-accent-start),
+    var(--color-accent-end)
+  );
+  border: none;
+  border-radius: var(--radius-md);
+  color: var(--color-bg);
+  font-family: var(--font-family);
+  font-size: 0.9375rem;
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.coming-soon-btn:hover {
+  box-shadow: 0 4px 16px var(--color-accent-glow);
+}
+
+/* ===========================
    Social Media Section
    =========================== */
 
@@ -645,6 +727,7 @@ body {
 
   .content {
     max-width: min(640px, 90vw);
+    height: 100%;
   }
 
   .brand-name {
@@ -699,6 +782,7 @@ body {
   }
 
   .content {
+    height: 100%;
     max-width: 95vw;
   }
 
@@ -723,10 +807,6 @@ body {
   .subtitle {
     font-size: clamp(0.875rem, 2.5vw, 1rem);
     margin-bottom: var(--space-2xl);
-  }
-
-  .notify-slider {
-    max-width: min(180px, 85vw);
   }
 
   .social-icons {
@@ -756,15 +836,23 @@ body {
   }
 
   .container {
-    padding: var(--space-md);
+    padding: var(--space-lg);
+    justify-content: center; /* Keep this as center */
+    min-height: 100vh;
   }
 
-  .badge {
-    margin-bottom: var(--space-lg);
+  .content {
+    justify-content: space-between; /* Use space-between instead */
+    min-height: 85vh; /* Give content a minimum height to spread across */
+    padding: var(--space-xl) 0;
   }
+
+  /* .badge {
+    margin-bottom: var(--space-lg);
+  } */
 
   .brand-name {
-    font-size: 1.5rem;
+    font-size: 1.75rem;
   }
 
   .brand-logo {
@@ -773,17 +861,13 @@ body {
   }
 
   .title {
-    font-size: clamp(1rem, 6.5vw, 1.25rem);
+    font-size: 1.35rem;
     padding-top: var(--space-md);
     margin-bottom: var(--space-md);
   }
 
   .subtitle {
-    font-size: 0.9375rem;
-  }
-
-  .notify-slider {
-    max-width: 100%;
+    font-size: 1rem;
   }
 
   .footer {
@@ -804,20 +888,21 @@ body {
   }
 
   .container {
-    padding: var(--space-sm);
+    height: 100%;
+    padding: var(--space-lg);
   }
-
+  /* 
   .badge {
     margin-bottom: var(--space-md);
     padding: var(--space-xs) var(--space-sm);
-  }
+  } */
 
   .brand {
     margin-bottom: var(--space-lg);
   }
 
   .brand-name {
-    font-size: 1.25rem;
+    font-size: 1.5rem;
   }
 
   .brand-logo {
@@ -826,10 +911,11 @@ body {
   }
 
   .title {
-    font-size: clamp(0.9375rem, 7vw, 1.125rem);
+    font-size: 1.25rem;
   }
 
   .subtitle {
+    font-size: 1rem;
     margin-bottom: var(--space-xl);
   }
 
@@ -838,7 +924,7 @@ body {
   }
 
   .social-section {
-    margin-top: var(--space-2xl);
+    margin-top: 8cap;
   }
 
   .social-link {
@@ -863,7 +949,7 @@ body {
 /* Extra small (320px) */
 @media (max-width: 375px) {
   html {
-    font-size: 13px;
+    font-size: 14px;
   }
 
   .dot-grid {
@@ -871,7 +957,7 @@ body {
   }
 
   .brand-name {
-    font-size: 1.125rem;
+    font-size: 1.375rem;
   }
 
   .brand-logo {
@@ -880,13 +966,17 @@ body {
   }
 
   .title {
+    font-size: 1.125rem;
+  }
+
+  .subtitle {
     font-size: 0.9375rem;
   }
 }
 
 @media (max-width: 320px) {
   html {
-    font-size: 12px;
+    font-size: 14px;
   }
 
   .dot-grid {
@@ -894,11 +984,20 @@ body {
   }
 
   .container {
+    height: 100%;
     padding: var(--space-xs);
   }
 
   .brand-name {
+    font-size: 1.25rem;
+  }
+
+  .title {
     font-size: 1rem;
+  }
+
+  .subtitle {
+    font-size: 0.9375rem;
   }
 
   .social-link {
