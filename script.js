@@ -67,24 +67,26 @@ document.addEventListener("DOMContentLoaded", () => {
     emailInput.classList.add("error");
   }
 
-  const NOTIFY_EMAIL = "qera.ops@gmail.com";
-
-  function submitEmail(email) {
+  async function submitEmail(email) {
     popupSend.disabled = true;
     if (sendText) sendText.textContent = "Submitting...";
 
-    const subject = encodeURIComponent("Qera Waitlist Signup");
-    const body = encodeURIComponent(`New signup: ${email}`);
-    const mailtoLink = `mailto:${NOTIFY_EMAIL}?subject=${subject}&body=${body}`;
+    try {
+      const resp = await fetch("/api/notify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
 
-    window.location.href = mailtoLink;
+      if (!resp.ok) {
+        const data = await resp.json().catch(() => ({}));
+        throw new Error(data?.error || "Failed to submit");
+      }
 
-    setTimeout(() => {
       popupHint.textContent = "Thanks! We'll notify you at launch.";
       popupHint.className = "email-popup-hint success";
       emailInput.value = "";
-      if (sendText) sendText.textContent = "Send";
-      popupSend.disabled = false;
+
       formHint.textContent = "We'll let you know when we launch.";
       formHint.classList.add("success");
 
@@ -94,7 +96,13 @@ document.addEventListener("DOMContentLoaded", () => {
         formHint.classList.remove("success");
         formHint.textContent = "Slide or click to get notified.";
       }, 1500);
-    }, 800);
+    } catch (err) {
+      popupHint.textContent = err?.message || "Something went wrong";
+      popupHint.className = "email-popup-hint error";
+    } finally {
+      if (sendText) sendText.textContent = "Send";
+      popupSend.disabled = false;
+    }
   }
 
   // Track click (anywhere on slider opens popup)
