@@ -36,7 +36,7 @@ export default async function handler(req, res) {
   const from = process.env.NOTIFY_FROM || "Qera Studio <onboarding@resend.dev>";
 
   try {
-    await resend.emails.send({
+    const result = await resend.emails.send({
       from,
       to,
       subject: "Qera waitlist signup",
@@ -44,9 +44,17 @@ export default async function handler(req, res) {
       replyTo: email,
     });
 
-    return json(res, 200, { ok: true });
+    return json(res, 200, {
+      ok: true,
+      id: result?.data?.id || null,
+      to,
+      from,
+    });
   } catch (err) {
-    return json(res, 500, { error: "Failed to send email" });
+    return json(res, 500, {
+      error: "Failed to send email",
+      details: err?.message || String(err),
+    });
   }
 }
 
