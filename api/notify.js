@@ -44,12 +44,29 @@ export default async function handler(req, res) {
       replyTo: email,
     });
 
-    return json(res, 200, {
-      ok: true,
-      id: result?.data?.id || null,
-      to,
-      from,
-    });
+    const id = result?.data?.id ?? result?.id ?? null;
+    const error = result?.error ?? null;
+
+    if (error) {
+      return json(res, 502, {
+        ok: false,
+        error: "Resend rejected the request",
+        details: error?.message || error,
+        to,
+        from,
+      });
+    }
+
+    if (!id) {
+      return json(res, 502, {
+        ok: false,
+        error: "No message id returned from Resend",
+        to,
+        from,
+      });
+    }
+
+    return json(res, 200, { ok: true, id, to, from });
   } catch (err) {
     return json(res, 500, {
       error: "Failed to send email",
