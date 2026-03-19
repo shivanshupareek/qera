@@ -200,6 +200,9 @@ body {
   border-radius: var(--radius-full);
   margin-bottom: var(--space-2xl);
   transition: all var(--transition-base);
+  position: sticky;
+  top: var(--space-lg);
+  z-index: 20;
 }
 
 .badge:hover {
